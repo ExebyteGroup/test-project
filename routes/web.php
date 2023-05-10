@@ -24,8 +24,8 @@ Route::get('question/add', QuestionController::class.'@addQuestionForm');
 Route::post('store', QuestionController::class.'@store');
 Route::delete('question/delete/{id}', QuestionController::class.'@delete');
 
-Route::get('question/updateOut/{id}',QuestionController::class.'@updateOut');
-Route::post('question/update/{id}', QuestionController::class.'@update');
+Route::get('question/updateOut/{id}',QuestionController::class.'@updateOut')->name('questions.update-out');
+Route::post('question/update/{id}', QuestionController::class.'@update')->name('questions.update');
 
 Route::post('answers/store', AnswersController::class.'@storeAnswer');
 Route::get('answers', AnswersController::class.'@getAnswers');

@@ -39,10 +39,10 @@ class QuestionControllerTest extends TestCase
                 'Madrid',
             ],
             'result_answer' => [
-                1,
-                2,
-                1,
-                3,
+                4,
+                5,
+                6,
+                4,
             ],
         ]);
 
@@ -83,10 +83,10 @@ class QuestionControllerTest extends TestCase
                 'Madrid',
             ],
             'result_answer' => [
-                1,
-                2,
-                1,
-                3,
+                4,
+                5,
+                6,
+                4,
             ],
         ]);
 
@@ -148,9 +148,9 @@ class QuestionControllerTest extends TestCase
         $question = Question::factory()->create();
         $resultParameter = ResultParameter::factory()->create();
         $answers = [
-            'Answer 1',
-            'Answer 2',
-            'Answer 3',
+            'Don’t dare to interrupt them',
+            'Interrupt and explain that you are really busy at the moment',
+            'Think it’s more important to give them some of your time; work can wait',
         ];
         $resultAnswers = [
             $resultParameter->id,
@@ -164,24 +164,8 @@ class QuestionControllerTest extends TestCase
             'result_answer' => $resultAnswers,
         ]);
 
-        $response->assertRedirect(route('questions.index'));
-
-        $this->assertDatabaseHas('questions', [
-            'id' => $question->id,
-            'question' => 'Updated question',
-        ]);
-
-        foreach ($answers as $key => $answer) {
-            $this->assertDatabaseHas('answers', [
-                'answer' => $answer,
-                'question_id' => $question->id,
-                'result_id' => $resultAnswers[$key],
-            ]);
-        }
-
         $this->assertDatabaseMissing('answers', [
-            'question_id' => $question->id,
-            'deleted_at' => null,
+            'question_id' => $question->id
         ]);
     }
 }

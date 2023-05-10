@@ -14,46 +14,52 @@
 
         public function storeAnswer(Request $request)
         {
-            $items = json_decode($request['items']);
-            // Use count instead user id, we don't have user interface
-            $count = Results::all()->last();
+            if($request['items']){
+                $items = json_decode($request['items']);
+                // Use count instead user id, we don't have user interface
+                $count = Results::all()->last();
 
-            $resultIds = [];
+                $resultIds = [];
 
-            $num = 1;
-            if($count)
-                $num = $count->key + $num;
+                $num = 1;
+                if($count)
+                    $num = $count->key + $num;
 
-            if(!$count) {
-                foreach($items as $result) {
-                    $resultModel = new Results();
-                    $resultModel->key = $num;
-                    $resultModel->question_id = $result->question_id;
-                    $resultModel->answer_id = $result->answer_id;
-                    $resultModel->save();
+                if(!$count){
+                    foreach($items as $result){
+                        $resultModel = new Results();
+                        $resultModel->key = $num;
+                        $resultModel->question_id = $result->question_id;
+                        $resultModel->answer_id = $result->answer_id;
+                        $resultModel->save();
+                    }
+                } else{
+                    foreach($items as $result){
+                        $resultModel = new Results();
+                        $resultModel->key = $num;
+                        $resultModel->question_id = $result->question_id;
+                        $resultModel->answer_id = $result->answer_id;
+                        $resultModel->save();
+                    }
                 }
+
+                $data = Results::where(['key' => $num])->get();
+                foreach($data as $result){
+                    array_push($resultIds, $result->answers->parameter->id);
+                };
+
+                // new array containing frequency of values of $arr
+                $arr_freq = array_count_values($resultIds);
+                // arranging the new $arr_freq in decreasing order
+                // of occurrences
+                arsort($arr_freq);
+                // $new_arr containing the keys of sorted array
+                $new_arr = array_keys($arr_freq);
+
+                return view('results', ['result' => ResultParameter::find($new_arr[0])]);
             } else {
-                foreach($items as $result) {
-                    $resultModel = new Results();
-                    $resultModel->key = $num;
-                    $resultModel->question_id = $result->question_id;
-                    $resultModel->answer_id = $result->answer_id;
-                    $resultModel->save();
-                }
+              return redirect('/');
             }
-
-            $data = Results::where(['key' => $num])->get();
-            foreach($data as $result) { array_push($resultIds,$result->answers->parameter->id); };
-
-            // new array containing frequency of values of $arr
-            $arr_freq = array_count_values($resultIds);
-            // arranging the new $arr_freq in decreasing order
-            // of occurrences
-            arsort($arr_freq);
-            // $new_arr containing the keys of sorted array
-            $new_arr = array_keys($arr_freq);
-
-            return view('results', ['result' => ResultParameter::find($new_arr[0])]);
         }
 
         public function getAnswers()

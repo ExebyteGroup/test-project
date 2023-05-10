@@ -20,18 +20,24 @@
 
         public function store(Request $request)
         {
+            $validatedData = $request->validate([
+                'question' => 'required|string|max:255',
+                'answers.*' => 'nullable|string|max:255',
+                'result_answer.*' => 'nullable|integer|exists:result_parameters,id',
+            ]);
+
             $question = new Question();
-            $question->question = $request['question'];
+            $question->question = $validatedData['question'];
             $question->save();
 
-            if($request['answers']){
-                foreach($request['answers'] as $key => $answer)
+            if($validatedData['answers']){
+                foreach($validatedData['answers'] as $key => $answer)
                 {
                     if($answer) {
                         $answerModel = new Answer();
                         $answerModel->answer = $answer;
                         $answerModel->question_id = $question->id;
-                        $answerModel->result_id = $request['result_answer'][$key];
+                        $answerModel->result_id = $validatedData['result_answer'][$key];
                         $answerModel->save();
                     }
                 }
